@@ -27,10 +27,10 @@ Why are there so many unsatisfactory options here? Wouldn't it be nice to have a
 A one-size-fits-all solution is difficult, because the landscape of development environments for C is very fragmented. The primary reason for this is that there is no single generally agreed-upon way to program in C. There are multiple different compilers, multiple different build tools, multiple language standards, multiple compiler extensions to change the syntax and semantics of the language, as well as the notorious preprocessor that can turn your program into something that doesn't even resemble the basic language syntax anymore. Looking at it this way, it is no wonder that the recommended way of developing a project in C is highly context-dependent. Consider these cases:
 
 * When building a game engine on Windows, one might use Visual Studio with the MSVC compiler and MSBuild as a build tool.
-* When working on the Linux kernel, one might use vim/emacs/nano with GCC and the custom KBuild build tool.
-* When developing for macOS/iOS/iPadOS/tvOS, one might use Apple's fork of Clang in XCode and its `xcodebuild` build tool.
+* When working on the Linux kernel, one might use vim/emacs/nano with GCC and the custom KBuild tool.
+* When developing for macOS/iOS/iPadOS/tvOS, one might use Apple's fork of Clang in XCode and its `xcodebuild` tool.
 * When working on a cross-platform project on any of the main desktop OSes, one might use CLion or VSCode with upstream Clang and CMake as a build tool.
-* When working on an Android app, one might use Android Studio with Clang and the NDK as well as the `ndk-build` build tool.
+* When working on an Android app, one might use Android Studio with Clang and the NDK as well as the `ndk-build` tool.
 * When working in embedded programming, one might use proprietary IDEs (oftentimes built upon Eclipse) with the custom compiler for the specific platform one is targeting.
 * When working in high-performance computing, one might use an arbitrary editor alongside Intel's ICC compiler and MPI libraries.
 * When developing a recreational programming project, one might use TCC with a traditional Makefile for simplicity.
