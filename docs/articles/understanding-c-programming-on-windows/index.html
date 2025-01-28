@@ -1,0 +1,69 @@
+<html>
+<head>
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+	<link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
+	<link rel="shortcut icon" href="/favicon/favicon.ico" />
+	<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
+	<meta name="apple-mobile-web-app-title" content="Stevie" />
+	<link rel="manifest" href="/favicon/site.webmanifest" />
+	<link href="/stylesheet.css" rel="stylesheet" />
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Raleway:ital,wght@0,100..900;1,100..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=12.0, minimum-scale=1.0, user-scalable=yes">
+	<title>Understanding C Programming on Windows</title>
+</head>
+<header>
+	<div class="header-container">
+		<a class="header-nav" href="/">Stevie's Blog</a>
+		<hr />
+		<div class="header-nav-row">
+			<a class="header-nav" href="/about/">About</a>
+			<a class="header-nav" href="/projects/">Projects</a>
+			<a class="header-nav" href="/articles/">Articles</a>
+			<a class="header-nav" href="https://github.com/srseil">Github</a>
+		</div>
+	</div>
+</header>
+<body>
+<p class="title-date">January 28, 2025</p>
+<p class="title-name">Understanding C Programming on Windows</p>
+<p class="title-caption">Environments, Compilers and Standard Library Implementations</p>
+<hr/>
+<p>For people like me, who’s journey into C programming initially started in a Linux environment, the endeavor of writing C code on Windows can seem confusing at first. The development tools that we are familiar with aren’t readily available, and there generally seems to be a separate way of going about things. The differences in C programming between Windows and Unix-like OSes mostly center around development environments, compilers (incl. ABI-compatibility<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> and commandline conventions) and standard library implementations. In this article, I want to lay out my understanding of the landscape for someone who is interested in programming in C on Windows. As we are going to see, there are two main paths to go down: the Windows way and the Unix way.</p>
+<h1 id="the-windows-way">The Windows Way</h1>
+<p>The first option is to fully embrace the Windows way of doing things. Microsoft provides the MSVC compiler, distributed through Visual Studio, as well as the MSVCRT and UCRT runtimes which include implementations of the C standard library. The latter are installed per default on all Windows systems; MSVCRT on pretty much all of them, and UCRT per default on Windows 10 and upwards (one can install it manually on Vista and upwards).</p>
+<p>The MSVC C compiler is notoriously non-compliant for C99, due to missing variable length arrays (VLAs)<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>. It is, however, compliant with C11, because the support for VLAs has become optional with that version of the standard<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>. MSVC also uses different commandline conventions for its <code>cl.exe</code> compared to <code>gcc</code>, which means you cannot simply drop-in MSVC in a build script that expects GCC or Clang.</p>
+<p>Clang/LLVM has first-party support for Windows. In general, Clang for Windows tries to be <a href="https://clang.llvm.org/docs/MSVCCompatibility.html">compatible</a> with MSVC in terms of ABI-compatibility and language extensions. There is also <a href="https://clang.llvm.org/docs/UsersManual.html#clang-cl">clang-cl</a>, which is a <em>driver program</em> for Clang that offers commandline compatibility with MSVC. Using that, Clang supports the same commandline arguments as the MSVC <code>cl.exe</code> and becomes compatible with Microsoft’s linker and system headers, such that you can in fact use it as a drop-in replacement for MSVC in Visual Studio.</p>
+<h1 id="the-unix-way">The Unix Way</h1>
+<p>The second main option is to re-create a Unix-like environment (like on Linux or macOS) on Windows. There are multiple different projects working on this from different angles. Even though I’ve used some of them myself in the past, the exact meaning and differences between these projects was never quite clear to me. I hope I can make things clearer here. Let’s go through the four most prominent options.</p>
+<h2 id="windows-subsystem-for-linux">Windows Subsystem for Linux</h2>
+<p><a href="https://learn.microsoft.com/en-us/windows/wsl/about">WSL</a> runs a full Linux distribution (e.g. Ubuntu) in a virtualized environment on Windows. When invoking e.g. <code>gcc</code> on the WSL commandline, it uses the actual build of the compiler from the package repositories of the distribution, and all the Linux system calls are routed through the virtualized compatibility layer in order to be executed on Windows. Using a C compiler in WSL, installed as a regular Linux package, will produce ELF binaries for Linux. As such, within the context of C programming, this is mostly useful for cross-compiling programs on Windows <em>for Linux</em>.</p>
+<h2 id="cygwin">Cygwin</h2>
+<p><a href="https://www.cygwin.com/">Cygwin</a> provides a Unix-like environment including a CLI on Windows. You can compile code (but not directly run pre-compiled binaries!) for Unix-like systems on Windows using the Cygwin environment. It offers the <code>cygwin1.dll</code> library that attempts to implement a full POSIX compatibility layer on top of Windows API calls (for features like sockets, pthreads and semaphores), as well as a development toolchain including common GNU tools (incl. <code>gcc</code>, <code>binutils</code>, etc.).</p>
+<p>Programs compiled for Windows using Cygwin use <a href="https://sourceware.org/newlib/">Newlib</a> as a C standard library implementation and depend on the <code>cygwin1.dll</code>. The latter then has to be distributed alongside the application. Because the resulting binaries depend on the Cygwin environment, their ABI isn’t compatible with either the MSVC ABI or the MinGW-w64 ABI (see below).</p>
+<h2 id="mingw-w64">MinGW-w64</h2>
+<p><em>Not to be confused with the older, and at this point largely obsolete <em>MinGW (MinGW32)</em>, from which it was forked a long time ago.</em></p>
+<p><a href="https://www.mingw-w64.org/">MinGW-w64</a> offers an environment for building native Windows program using ported versions of common GNU development tools (incl. <code>gcc</code>, <code>binutils</code>, etc.) and many others (e.g. the GCC-compatible Clang/LLVM toolchain). It will link programs to either MSVCRT (per default) or UCRT. In terms of ABI compatibility, you can link C code compiled within MinGW-w64 to C code compiled with MSVC, as long as they both use the same standard library implementation (either MSVCRT or UCRT)<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>.</p>
+<p>Microsoft provides header files and static import libraries for the Windows API through the <a href="https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/">Windows SDK</a>. It contains some proprietary components and requires agreeing to Microsoft’s terms and conditions during installation, making it difficult to redistribute it outside of Visual Studio. To work around this, MinGW-w64 offers freely distributable alternatives for header files and import libraries. As such, you can use its toolchain without ever having to touch Microsoft’s development environment (incl. Visual Studio and its installers) at all.</p>
+<h2 id="msys2">MSYS2</h2>
+<p><em>Not to be confused with <em>MSYS</em> for the old MinGW (MinGW32).</em></p>
+<p><a href="https://www.msys2.org/">MSYS2</a> also attempts to offer a Unix-like environment for Windows. However, instead of running a whole Linux distribution through a virtual machine (like WSL) or implementing a full POSIX compatibility layer (like Cygwin), it focuses on providing a pragmatic environment containing just the necessary tools for development and deployment. In doing so, it builds upon both Cygwin and MinGW-w64. It ships a simplified version of Cygwin’s <code>cygwin1.dll</code> library in order to provide a package manager (Pacman), a shell (Bash) and various Unix tools.</p>
+<p>For compilation, MSYS2 has different environments set up for building native Windows programs. These include MINGW64 (the MinGW-w64 development environment), UCRT64 (like MINGW64 but linking against UCRT instead of MSVCRT) and CLANG64 (like UCRT64 but using Clang/LLVM instead of GCC). The ABI compatibility then depends on which compiler toolchain and standard library implementation one chooses to use.</p>
+<p><br />
+</p>
+<p>As we can see, there are two main paths one can go down: using Visual Studio with MSVC and its whole development toolchain, or establishing a Unix-like environment on Windows and use GCC-compatible compilers. Which to choose ultimately depends on your taste and your requirements. For <em>Seaside</em>, the IDE that I am working on, I am choosing the Unix way. Given that it is meant to be a cross-platform application, this will give me a similar development environment on Windows, macOS and Linux. I can <em>dogfood</em> the environment during the development of the IDE itself, and later attempt to ship exactly that environment for use within the IDE.</p>
+<section class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>See <a href="https://web.archive.org/web/20201130131120/http://mingw.org/wiki/Interoperability_of_Libraries_Created_by_Different_Compiler_Brands">here</a> for a short overview of the problem of ABI compatibility.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p>As such, the latest C standard fully supported by MSVC prior to C11 is C90 (<a href="https://learn.microsoft.com/en-us/cpp/c-language/ansi-conformance?view=msvc-170">ANSI Conformance</a>).<a href="#fnref2" class="footnote-back">↩</a></p></li>
+<li id="fn3"><p>For justifications why VLAs aren’t supported in Microsoft’s C11 implementation, see the corresponding <a href="https://devblogs.microsoft.com/cppblog/c11-and-c17-standard-support-arriving-in-msvc/">dev blog</a>.<a href="#fnref3" class="footnote-back">↩</a></p></li>
+<li id="fn4"><p>The <a href="https://learn.microsoft.com/en-us/cpp/c-runtime-library/crt-library-features?view=msvc-170#what-problems-exist-if-an-application-uses-more-than-one-crt-version">potential incompatibilities</a> when linking binaries using different CRTs largely arise from differences in struct layouts and memory being passed across DLL boundaries. You can architect your program in a way that evades this issue, by allocating and freeing the same memory regions within one DLL, and by making sure that function calls across boundaries pass arguments by value. It seems to me that all of this isn’t nearly as much of a problem when not using C++-style object oriented programming, where memory is allocated ad-hoc all across the program all the time.<a href="#fnref4" class="footnote-back">↩</a></p></li>
+</ol>
+</section>
+</body>
+<footer>
+© 2025 — Stevie
+</footer>
+</html>
