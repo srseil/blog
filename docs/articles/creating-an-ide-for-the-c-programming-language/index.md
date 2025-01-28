@@ -65,7 +65,6 @@ As always, the devil is in the details, and I'm probably missing something. But 
 
 [^cmake-ray]: CMake is Turing-complete and someone has written a [ray tracer](https://64.github.io/cmake-raytracer/) in it.
 
-
 [^impossible]: I am reminded of the famous statement by Walter Bright, which I cannot find an exact quote for, that paraphrases as something like this:
 
     > I once thought creating a new language was impossible, but writing a C++ compiler was feasible. In reality, the opposite turned out to be true.

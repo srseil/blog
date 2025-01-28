@@ -58,7 +58,6 @@ body a {
 
 .title-name {
     font-weight: bold;
-
     font-family: "Libre Baskerville", serif;
     font-weight: 700;
     font-style: normal;
@@ -75,7 +74,7 @@ body a {
 h1 {
     font-family: "Libre Baskerville", serif;
     font-weight: bold;
-      font-style: normal;
+    font-style: normal;
     font-size: 20px;
     margin-top: 2em;
 }
@@ -83,7 +82,7 @@ h1 {
 h2 {
     font-family: "Source Sans 3", sans-serif;
     font-weight: bold;
-      font-style: normal;
+    font-style: normal;
     font-size: 18px;
     margin-top: 1em;
 }
@@ -91,7 +90,7 @@ h2 {
 h3 {
     font-family: "Source Sans 3", sans-serif;
     font-weight: 600;
-      font-style: italic;
+    font-style: italic;
     font-size: 18px;
     margin-top: 1em;
 }
