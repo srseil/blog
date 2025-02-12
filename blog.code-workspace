@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"livePreview.serverRoot": "docs/",
+		"terminal.integrated.defaultProfile.windows": "Ubuntu (WSL)"
+	}
+}
