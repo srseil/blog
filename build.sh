@@ -18,7 +18,7 @@ for file in $(find docs -name '*.md'); do
         -f markdown \
         -t html \
         --template="$SCRIPT_DIR/template.html" \
-        --no-highlight \
+	--syntax-highlighting=none \
         --lua-filter="$SCRIPT_DIR/image-dimensions.lua" \
         -o "${base%.md}.html"
     )
