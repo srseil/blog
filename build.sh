@@ -5,9 +5,18 @@
 # Get the directory of the current script
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+# Count the Markdown files up front so we can show "[n/total]" progress
+total=$(find docs -name '*.md' | wc -l | tr -d ' ')
+count=0
+
+echo "Building $total page(s)..."
+
 for file in $(find docs -name '*.md'); do
+    count=$((count + 1))
     dir="$(dirname "$file")"
     base="$(basename "$file")"
+
+    printf '[%d/%d] %s -> %s\n' "$count" "$total" "$file" "${file%.md}.html"
 
     # Switch to the directory that contains the Markdown file
     (
@@ -24,3 +33,5 @@ for file in $(find docs -name '*.md'); do
         -o "${base%.md}.html"
     )
 done
+
+echo "Done."
