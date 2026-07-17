@@ -1,0 +1,12 @@
+# Normalize all text files to LF in the repository.
+# Prevents CRLF noise when files are edited/synced from Windows.
+* text=auto eol=lf
+
+# Explicitly treat binary assets as binary (never touch line endings).
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
