@@ -65,6 +65,9 @@
 </section>
 </body>
 <footer>
-© 2026 — Stefan Seil
+© <span id="footer-year">YEAR</span> — Stefan Seil
 </footer>
+<script>
+	document.getElementById("footer-year").textContent = new Date().getFullYear();
+</script>
 </html>

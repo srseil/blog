@@ -55,6 +55,9 @@
 <p>Of course, the prerequisite is that someone is interested in my articles in the first place. And I think it’s best to let go of any expectations around who is reading what I am writing. Or whether people like it. I want to do it for myself, and that’s all it is supposed to be. That is good enough for me.</p>
 </body>
 <footer>
-© 2026 — Stefan Seil
+© <span id="footer-year">YEAR</span> — Stefan Seil
 </footer>
+<script>
+	document.getElementById("footer-year").textContent = new Date().getFullYear();
+</script>
 </html>

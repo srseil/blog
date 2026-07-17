@@ -42,6 +42,9 @@
 <p>Cubicolor is a minimalist 3D puzzle game which I developed and self-published <a href="https://store.steampowered.com/app/454190/Cubicolor/">on Steam</a> in 2016. The game was initially written in Java with the libGDX game development framework. Over the course of the following two years I fixed bugs, added requested features, and ended up re-implementing the game in the Godot engine. The code can be found <a href="https://github.com/srseil/Cubicolor">on Github</a>.</p>
 </body>
 <footer>
-© 2026 — Stefan Seil
+© <span id="footer-year">YEAR</span> — Stefan Seil
 </footer>
+<script>
+	document.getElementById("footer-year").textContent = new Date().getFullYear();
+</script>
 </html>

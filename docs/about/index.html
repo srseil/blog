@@ -35,10 +35,23 @@
 <img src="./stevie.jpg" alt="" width="1787" height="1190" />
 <figcaption>Me, having breakfast on a houseboat (Rotterdam, Netherlands, 2022)</figcaption>
 </figure>
-<p>Hey! My name is Stefan R. Seil and this is my blog. I am 29 years old and live in Munich, Germany. My passions include software development tools, video game programming, desktop application development, procedural generation, music and philosophy. I hold a M.Sc. in computer science and a B.A. in philosophy, both from LMU Munich. Since graduating, I have worked as a fullstack web developer and attempted to create multiple video games.</p>
+<p>Hey! My name is Stefan R. Seil and this is my blog. I am <span id="age">AGE</span> years old and live in Munich, Germany. My passions include software development tools, video game programming, desktop application development, procedural generation, music and philosophy. I hold a M.Sc. in computer science and a B.A. in philosophy, both from LMU Munich. Since graduating, I have worked as a fullstack web developer and attempted to create multiple video games.</p>
 <p>If you want to contact me, feel free to send an email to <a href="mailto:contact@srseil.com">contact@srseil.com</a>.</p>
+<script>
+    const birthday = new Date(1997, 1, 7);
+    const today = new Date();
+    let age = today.getFullYear() - birthday.getFullYear();
+    const monthDiff = today.getMonth() - birthday.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthday.getDate())) {
+        age--;
+    }
+    document.getElementById("age").textContent = age;
+</script>
 </body>
 <footer>
-© 2026 — Stefan Seil
+© <span id="footer-year">YEAR</span> — Stefan Seil
 </footer>
+<script>
+	document.getElementById("footer-year").textContent = new Date().getFullYear();
+</script>
 </html>
