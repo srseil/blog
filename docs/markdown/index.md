@@ -91,18 +91,18 @@ _This is italic text_
 # Links
 
 ```
-[Inline link with title](https://stevie.blog "Stevie's Blog")
+[Inline link with title](https://srseil.com "Stefan Seil's Blog")
 
 [Relative reference to a file](./index.md)
 
-URLs in angle brackets are automatically turned into links: <https://stevie.blog>
+URLs in angle brackets are automatically turned into links: <https://srseil.com>
 ```
 
-[Inline link with title](https://stevie.blog "Stevie's Blog")
+[Inline link with title](https://srseil.com "Stefan Seil's Blog")
 
 [Relative reference to a file](./index.md)
 
-URLs in angle brackets are automatically turned into links: <https://stevie.blog>
+URLs in angle brackets are automatically turned into links: <https://srseil.com>
 
 # Images
 
@@ -114,7 +114,7 @@ Image with optional caption and title:
 
 Image with optional caption and title:
 
-![An illustration of Longcat.](./longcat.jpg "Longcat")
+![An illustration of Longcat](./longcat.jpg "Longcat")
 
 # Footnotes
 

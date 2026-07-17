@@ -53,4 +53,4 @@ For compilation, MSYS2 has different environments set up for building native Win
 
 \
 
-As we can see, there are two main paths one can go down: using Visual Studio with MSVC and its whole development toolchain, or establishing a Unix-like environment on Windows and use GCC-compatible compilers. Which to choose ultimately depends on your taste and your requirements. For _Seaside_, the IDE that I am working on, I am choosing the Unix way. Given that it is meant to be a cross-platform application, this will give me a similar development environment on Windows, macOS and Linux. I can _dogfood_ the environment during the development of the IDE itself, and later attempt to ship exactly that environment for use within the IDE.
+As we can see, there are two main paths one can go down: using Visual Studio with MSVC and its whole development toolchain, or establishing a Unix-like environment on Windows and use GCC-compatible compilers. Which to choose ultimately depends on your taste and your requirements.

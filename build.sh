@@ -17,6 +17,7 @@ for file in $(find docs -name '*.md'); do
       pandoc "$base" \
         -f markdown \
         -t html \
+        --wrap=none \
         --template="$SCRIPT_DIR/template.html" \
 	--syntax-highlighting=none \
         --lua-filter="$SCRIPT_DIR/image-dimensions.lua" \

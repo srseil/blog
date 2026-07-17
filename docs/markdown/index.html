@@ -1,5 +1,6 @@
 <html>
 <head>
+	<meta charset="utf-8" />
     <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
 	<link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
 	<link rel="shortcut icon" href="/favicon/favicon.ico" />
@@ -15,7 +16,7 @@
 </head>
 <header>
 	<div class="header-container">
-		<a class="header-nav" href="/">Stevie's Blog</a>
+		<a class="header-nav" href="/">Stefan Seil's Blog</a>
 		<hr />
 		<div class="header-nav-row">
 			<a class="header-nav" href="/about/">About</a>
@@ -107,21 +108,22 @@ With line break
 <p>With additional paragraph attached</p></li>
 </ol>
 <h1 id="links">Links</h1>
-<pre><code>[Inline link with title](https://stevie.blog &quot;Stevie&#39;s Blog&quot;)
+<pre><code>[Inline link with title](https://srseil.com &quot;Stefan Seil&#39;s Blog&quot;)
 
 [Relative reference to a file](./index.md)
 
-URLs in angle brackets are automatically turned into links: &lt;https://stevie.blog&gt;</code></pre>
-<p><a href="https://stevie.blog" title="Stevie&#39;s Blog">Inline link with title</a></p>
+URLs in angle brackets are automatically turned into links: &lt;https://srseil.com&gt;</code></pre>
+<p><a href="https://srseil.com" title="Stefan Seil&#39;s Blog">Inline link with title</a></p>
 <p><a href="./index.md">Relative reference to a file</a></p>
-<p>URLs in angle brackets are automatically turned into links: <a href="https://stevie.blog" class="uri">https://stevie.blog</a></p>
+<p>URLs in angle brackets are automatically turned into links: <a href="https://srseil.com" class="uri">https://srseil.com</a></p>
 <h1 id="images">Images</h1>
 <pre><code>Image with optional caption and title:
 
 ![An illustration of Longcat.](./longcat.jpg &quot;Longcat&quot;)</code></pre>
 <p>Image with optional caption and title:</p>
 <figure>
-<img src="./longcat.jpg" title="Longcat" alt="An illustration of Longcat." alt="" width="800" height="600" /><figcaption>An illustration of Longcat.</figcaption>
+<img src="./longcat.jpg" title="Longcat" alt="" width="800" height="600" />
+<figcaption>An illustration of Longcat</figcaption>
 </figure>
 <h1 id="footnotes">Footnotes</h1>
 <pre><code>Footnote 1 link[^first].
@@ -137,9 +139,9 @@ Duplicated footnote reference[^second].
 [^second]: Footnote text.
 
 Footnootes are automatically placed at the end of the document.</code></pre>
-<p>Footnote 1 link<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
-<p>Footnote 2 link<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>.</p>
-<p>Duplicated footnote reference<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>.</p>
+<p>Footnote 1 link<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
+<p>Footnote 2 link<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>.</p>
+<p>Duplicated footnote reference<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>.</p>
 <p>Footnootes are automatically placed at the end of the document.</p>
 <h1 id="horizontal-rules">Horizontal Rules</h1>
 <pre><code>Three or more hyphens.
@@ -212,24 +214,24 @@ Markdown | Less | Pretty
 <p>Colons can be used to align columns.</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>Tables</th>
 <th style="text-align: center;">Are</th>
 <th style="text-align: right;">Cool</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>col 3 is</td>
 <td style="text-align: center;">right-aligned</td>
 <td style="text-align: right;">$1600</td>
 </tr>
-<tr class="even">
+<tr>
 <td>col 2 is</td>
 <td style="text-align: center;">centered</td>
 <td style="text-align: right;">$12</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>zebra stripes</td>
 <td style="text-align: center;">are neat</td>
 <td style="text-align: right;">$1</td>
@@ -239,19 +241,19 @@ Markdown | Less | Pretty
 <p>There must be at least 3 dashes separating each header cell. The outer pipes (|) are optional, and you don’t need to make the raw Markdown line up prettily. You can also use inline Markdown.</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>Markdown</th>
 <th>Less</th>
 <th>Pretty</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td><em>Still</em></td>
 <td><code>renders</code></td>
 <td><strong>nicely</strong></td>
 </tr>
-<tr class="even">
+<tr>
 <td>1</td>
 <td>2</td>
 <td>3</td>
@@ -260,17 +262,17 @@ Markdown | Less | Pretty
 </table>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>First Header</th>
 <th>Second Header</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>Content Cell</td>
 <td>Content Cell</td>
 </tr>
-<tr class="even">
+<tr>
 <td>Content Cell</td>
 <td>Content Cell</td>
 </tr>
@@ -278,19 +280,19 @@ Markdown | Less | Pretty
 </table>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th style="text-align: left;">Left-aligned</th>
 <th style="text-align: center;">Center-aligned</th>
 <th style="text-align: right;">Right-aligned</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td style="text-align: left;">git status</td>
 <td style="text-align: center;">git status</td>
 <td style="text-align: right;">git status</td>
 </tr>
-<tr class="even">
+<tr>
 <td style="text-align: left;">git diff</td>
 <td style="text-align: center;">git diff</td>
 <td style="text-align: right;">git diff</td>
@@ -323,17 +325,17 @@ Does apparently <em>also</em> work <strong>pretty</strong> well.
 <p>To ignore Markdown formatting, use \ before the Markdown character.</p>
 <pre><code>Let&#39;s rename \*our-new-project\* to \*our-old-project\*.</code></pre>
 <p>Let’s rename *our-new-project* to *our-old-project*.</p>
-<section class="footnotes">
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr />
 <ol>
 <li id="fn1"><p>Footnotes <strong>can have markup</strong>.</p>
-<p>And multiple paragraphs.<a href="#fnref1" class="footnote-back">↩</a></p></li>
-<li id="fn2"><p>Footnote text.<a href="#fnref2" class="footnote-back">↩</a></p></li>
-<li id="fn3"><p>Footnote text.<a href="#fnref3" class="footnote-back">↩</a></p></li>
+<p>And multiple paragraphs.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Footnote text.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>Footnote text.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 </body>
 <footer>
-© 2025 — Stevie
+© 2026 — Stefan Seil
 </footer>
 </html>
