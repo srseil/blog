@@ -95,6 +95,31 @@ h3 {
     margin-top: 1em;
 }
 
+/* Per-heading deep-link anchors (added by heading-anchors.lua). */
+h1, h2, h3 {
+    scroll-margin-top: 0.8em;
+}
+
+.anchor {
+    margin-left: 0.35em;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: normal;
+    opacity: 0;
+    transition: opacity 0.12s ease-in-out;
+}
+
+h1:hover .anchor,
+h2:hover .anchor,
+h3:hover .anchor,
+.anchor:focus {
+    opacity: 1;
+}
+
+.anchor:hover {
+    text-decoration: underline;
+}
+
 p {
     text-align: justify;
 }

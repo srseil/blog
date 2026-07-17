@@ -30,6 +30,7 @@ for file in $(find docs -name '*.md'); do
         --template="$SCRIPT_DIR/template.html" \
 	--syntax-highlighting=none \
         --lua-filter="$SCRIPT_DIR/image-dimensions.lua" \
+        --lua-filter="$SCRIPT_DIR/heading-anchors.lua" \
         -o "${base%.md}.html"
     )
 done
