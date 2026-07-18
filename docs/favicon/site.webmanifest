@@ -1,6 +1,6 @@
 {
-  "name": "Stevie's Blog",
-  "short_name": "Stevie",
+  "name": "Stefan Seil's Blog",
+  "short_name": "Stefan Seil",
   "icons": [
     {
       "src": "/favicon/web-app-manifest-192x192.png",
@@ -15,7 +15,7 @@
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
+  "theme_color": "#dcdde1",
+  "background_color": "#dcdde1",
   "display": "standalone"
 }

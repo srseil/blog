@@ -1,19 +1,34 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
 	<meta charset="utf-8" />
-    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=12.0, minimum-scale=1.0, user-scalable=yes">
+	<title>Projects — Stefan Seil</title>
+	<meta name="description" content="The personal blog of Stefan Seil — software development tools, game programming, desktop applications and philosophy." />
+	<link rel="canonical" href="https://srseil.com/projects/" />
+
+	<link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
 	<link rel="icon" type="image/svg+xml" href="/favicon/favicon.svg" />
 	<link rel="shortcut icon" href="/favicon/favicon.ico" />
 	<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
-	<meta name="apple-mobile-web-app-title" content="Stevie" />
+	<meta name="apple-mobile-web-app-title" content="Stefan Seil" />
 	<link rel="manifest" href="/favicon/site.webmanifest" />
+	<meta name="theme-color" content="#dcdde1" />
+
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="Stefan Seil's Blog" />
+	<meta property="og:title" content="Projects" />
+	<meta property="og:description" content="The personal blog of Stefan Seil — software development tools, game programming, desktop applications and philosophy." />
+	<meta property="og:url" content="https://srseil.com/projects/" />
+	<meta property="og:image" content="https://srseil.com/everything-will-be-ok.jpg" />
+	<meta name="twitter:card" content="summary_large_image" />
+
 	<link href="/stylesheet.css" rel="stylesheet" />
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Raleway:ital,wght@0,100..900;1,100..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=12.0, minimum-scale=1.0, user-scalable=yes">
-	<title>Projects</title>
 </head>
+<body>
 <header>
 	<div class="header-container">
 		<a class="header-nav" href="/">Stefan Seil's Blog</a>
@@ -28,25 +43,24 @@
 		</div>
 	</div>
 </header>
-<body>
-<p class="title-date"></p>
+<main>
 <p class="title-name">Projects</p>
-<p class="title-caption"></p>
 <hr/>
 <p>This is an overview of some noteworthy personal projects that I am working on or have finished.</p>
 <h1 id="seaside">Seaside<a href="#seaside" class="anchor" aria-hidden="true" tabindex="-1">#</a></h1>
 <p>Seaside is intended to be a modern, lightweight and fast IDE for the C programming language, centered around the Clang/LLVM toolchain. Over the years, I have become increasingly frustrated with the state of modern software development tools. I have witnessed how the development environments that I was using on a regular basis have become slower and buggier with every update. My hope is that I can do my share in fixing this problem by creating a properly integrated development environment for C that gets out of the way and is a joy to use.</p>
 <h1 id="video-game-prototypes">Video Game Prototypes<a href="#video-game-prototypes" class="anchor" aria-hidden="true" tabindex="-1">#</a></h1>
-<p><img src="./prototypes.jpg" alt="" width="3840" height="2160" /></p>
+<p><img src="./prototypes.jpg" width="3840" height="2160" /></p>
 <p>Between 2021 and 2025, I developed a number of technical prototypes for various video game ideas I came up with. Most of these didn’t reach the stage of actually being playable <em>as games</em>, instead they should be seen as experiments in using different languages, frameworks and architectures for video game programming. In 2025, I realized that I have grown out of gaming for the most part, and that I’m not all that drawn to the game design aspect of creating video games. I do however still enjoy the technical aspects of it and hope to be able to engage with them through other means. Among the created prototypes are <a href="https://github.com/srseil/Nightshade">a small traditional roguelike</a> (this one is actually playable!), <a href="https://github.com/srseil/Conquest">a real-time strategy city builder</a>, and <a href="https://github.com/srseil/Orbit">a transport simulation game</a>. All prototypes are available <a href="https://github.com/srseil">on Github</a>.</p>
 <h1 id="cubicolor">Cubicolor<a href="#cubicolor" class="anchor" aria-hidden="true" tabindex="-1">#</a></h1>
-<p><img src="./cubicolor.jpg" alt="" width="1280" height="720" /></p>
+<p><img src="./cubicolor.jpg" width="1280" height="720" /></p>
 <p>Cubicolor is a minimalist 3D puzzle game which I developed and self-published <a href="https://store.steampowered.com/app/454190/Cubicolor/">on Steam</a> in 2016. The game was initially written in Java with the libGDX game development framework. Over the course of the following two years I fixed bugs, added requested features, and ended up re-implementing the game in the Godot engine. The code can be found <a href="https://github.com/srseil/Cubicolor">on Github</a>.</p>
-</body>
+</main>
 <footer>
 © <span id="footer-year">YEAR</span> — Stefan Seil
 </footer>
 <script>
 	document.getElementById("footer-year").textContent = new Date().getFullYear();
 </script>
+</body>
 </html>

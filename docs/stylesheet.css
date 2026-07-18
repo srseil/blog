@@ -1,10 +1,25 @@
+:root {
+    --paper: #dcdde1;        /* page background */
+    --ink: #373945;          /* text and borders */
+    --accent: #3a7af2;       /* links */
+    --panel: #c0c3cb;        /* code / preformatted background */
+    --quote-bg: #f3f3f3;     /* blockquote background */
+}
+
 html {
     max-width: 900px;
     padding-left: 2%;
     padding-right: 2%;
     margin: 0 auto;
-    background: #dcdde1;
-    color: #373945;
+    background: var(--paper);
+    color: var(--ink);
+}
+
+body {
+    font-family: "Source Sans 3", sans-serif;
+    font-weight: 400;
+    font-size: 18px;
+    background: var(--paper);
 }
 
 a:hover {
@@ -34,17 +49,12 @@ header {
 
 .header-nav {
     text-decoration: none;
-    color: #373945;
+    color: var(--ink);
+    font-weight: bold;
 }
 
-body {
-    font-family: "Source Sans 3", sans-serif;
-    font-weight: 400;
-    font-size: 18px;
-}
-
-body a {
-    color: #3a7af2;
+main a {
+    color: var(--accent);
     font-weight: bold;
     text-decoration: none;
 }
@@ -131,7 +141,7 @@ sup {
 img {
     display: block;
     margin: auto;
-    border: 1px solid #373945;
+    border: 1px solid var(--ink);
     width: auto;
     height: auto;
     max-width: 100%;
@@ -146,8 +156,8 @@ figcaption {
 }
 
 blockquote {
-    background-color: #f3f3f3;
-    border: dashed 1px #373945;
+    background-color: var(--quote-bg);
+    border: dashed 1px var(--ink);
     font-style: italic;
     text-align: justify;
     padding: 2ch;
@@ -162,15 +172,15 @@ code {
     font-weight: normal;
     font-style: normal;
     font-size: 16px;
-      background-color: #c0c3cb;
+      background-color: var(--panel);
     border-radius: 0.2ch;
     padding-left: 0.3ch;
     padding-right: 0.3ch;
 }
 
 pre {
-    background-color: #c0c3cb;
-    border: 1px solid #373945;
+    background-color: var(--panel);
+    border: 1px solid var(--ink);
     border-radius: 0.2ch;
     padding-left: 2%;
     padding-top: 1ch;
@@ -194,11 +204,11 @@ th, td {
 }
 
 td + td, th + th {
-    border-left: 1px solid #373945;
+    border-left: 1px solid var(--ink);
 }
-    
+
 td {
-    border-top: 1px solid #373945;
+    border-top: 1px solid var(--ink);
 }
 
 .footnote-back {
@@ -215,7 +225,7 @@ footer {
     header {
         font-size: 12px;
     }
-    
+
     body {
         font-size: 12px;
     }

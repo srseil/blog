@@ -1,5 +1,6 @@
 ---
 title: "Markdown"
+noindex: true
 ---
 
 This page shows how Markdown ends up being rendered as HTML/CSS on this website.

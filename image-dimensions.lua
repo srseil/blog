@@ -15,7 +15,13 @@ function Image(elem)
     elem.attributes.height = h
   end
   
-  elem.attributes.alt = ""
+  -- Clear the alt text only when the image has a caption: pandoc renders that
+  -- caption as a visible <figcaption>, so keeping the alt would make screen
+  -- readers announce the same text twice. Captionless images keep their alt
+  -- so it can still serve as their accessible name.
+  if #elem.caption > 0 then
+    elem.attributes.alt = ""
+  end
   
   return elem
 end
