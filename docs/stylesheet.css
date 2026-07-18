@@ -274,16 +274,16 @@ html.js .theme-toggle {
     height: 1.15em;
 }
 
-.theme-toggle .icon-sun {
+.theme-toggle .icon-auto,
+.theme-toggle .icon-light,
+.theme-toggle .icon-dark {
     display: none;
 }
 
-:root[data-theme="dark"] .theme-toggle .icon-sun {
+:root[data-theme-mode="auto"] .theme-toggle .icon-auto,
+:root[data-theme-mode="light"] .theme-toggle .icon-light,
+:root[data-theme-mode="dark"] .theme-toggle .icon-dark {
     display: block;
-}
-
-:root[data-theme="dark"] .theme-toggle .icon-moon {
-    display: none;
 }
 
 @media (max-width: 500px) {

@@ -15,27 +15,42 @@
 	<link rel="manifest" href="/favicon/site.webmanifest" />
 	<meta name="theme-color" id="theme-color-meta" content="#dcdde1" />
 	<script>
-		// Set the theme before the page paints to avoid a flash of the wrong
-		// colors. Prefers a stored choice, otherwise follows the OS setting.
+		// Three-state theme control: "auto" follows the OS (and keeps following
+		// it live), "light"/"dark" pin a choice. Applied before paint to avoid a
+		// flash of the wrong colors. "auto" is represented by no stored value.
 		(function () {
-			function apply(theme) {
+			var mq = window.matchMedia("(prefers-color-scheme: dark)");
+			function storedMode() {
+				try { return localStorage.getItem("theme") || "auto"; } catch (e) { return "auto"; }
+			}
+			function systemTheme() {
+				return mq.matches ? "dark" : "light";
+			}
+			function apply(mode) {
+				var theme = mode === "auto" ? systemTheme() : mode;
 				var root = document.documentElement;
 				root.setAttribute("data-theme", theme);
+				root.setAttribute("data-theme-mode", mode);
 				root.classList.add("js");
 				var meta = document.getElementById("theme-color-meta");
 				if (meta) meta.setAttribute("content", theme === "dark" ? "#1e2027" : "#dcdde1");
+				var btn = document.getElementById("theme-toggle");
+				if (btn) btn.title = "Theme: " + mode;
 			}
-			function preferred() {
+			apply(storedMode());
+			// Follow OS changes live, but only while the mode is "auto".
+			function onSystemChange() {
+				if (storedMode() === "auto") apply("auto");
+			}
+			if (mq.addEventListener) mq.addEventListener("change", onSystemChange);
+			else if (mq.addListener) mq.addListener(onSystemChange);
+			window.__cycleTheme = function () {
+				var order = ["auto", "light", "dark"];
+				var next = order[(order.indexOf(storedMode()) + 1) % order.length];
 				try {
-					var stored = localStorage.getItem("theme");
-					if (stored) return stored;
+					if (next === "auto") localStorage.removeItem("theme");
+					else localStorage.setItem("theme", next);
 				} catch (e) {}
-				return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-			}
-			apply(preferred());
-			window.__toggleTheme = function () {
-				var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
-				try { localStorage.setItem("theme", next); } catch (e) {}
 				apply(next);
 			};
 		})();
@@ -55,9 +70,10 @@
 	<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Raleway:ital,wght@0,100..900;1,100..900&family=Source+Code+Pro:ital,wght@0,200..900;1,200..900&family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
 </head>
 <body>
-<button id="theme-toggle" class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
-	<svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-	<svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+<button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch color theme (auto, light, dark)">
+	<svg class="icon-auto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor" stroke="none"/></svg>
+	<svg class="icon-light" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+	<svg class="icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
 </button>
 <header>
 	<div class="header-container">
@@ -65,7 +81,6 @@
 		<hr />
 		<div class="header-nav-row">
 			<a class="header-nav" href="/about/">About</a>
-			<a class="header-nav" href="/cv/">CV</a>
 			<a class="header-nav" href="/projects/">Projects</a>
 			<a class="header-nav" href="/articles/">Articles</a>
 			<a class="header-nav" href="https://github.com/srseil" target="_blank" rel="noopener noreferrer">Github</a>
@@ -84,7 +99,10 @@
 <script>
 	document.getElementById("footer-year").textContent = new Date().getFullYear();
 	var themeToggle = document.getElementById("theme-toggle");
-	if (themeToggle) themeToggle.addEventListener("click", window.__toggleTheme);
+	if (themeToggle) {
+		themeToggle.addEventListener("click", window.__cycleTheme);
+		themeToggle.title = "Theme: " + (document.documentElement.getAttribute("data-theme-mode") || "auto");
+	}
 </script>
 </body>
 </html>

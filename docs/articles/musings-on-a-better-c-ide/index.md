@@ -1,10 +1,10 @@
 ---
 date: "January 25, 2025"
-title: "Creating an IDE for the C Programming Language"
-subtitle: "What Am I Even Trying To Do Here?"
+title: "Musings on a Better C IDE"
+subtitle: "A Moonshot Idea"
 ---
 
-The latest project I am working on is _Seaside_, a modern and lightweight IDE for the C programming language built around the Clang/LLVM toolchain. The idea of creating an IDE for C might seem strange to some. Why do we need yet another development environment, aren't there enough already? And why do I even care about C? In this article, I want to lay out my motivation and thought process behind starting this project.
+For a while now I've been wishing for a modern and lightweight IDE for the C programming language built around the Clang/LLVM toolchain. The idea of creating an IDE for C might seem strange to some. Why do we need yet another development environment, aren't there enough already? And why do I even care about C?
 
 # Motivation
 
@@ -59,7 +59,7 @@ For starters, the IDE would offer a fast, user-friendly visual debugger that syn
 
 In principle, one might be able to get away with using Clang/LLVM as one single compiler toolchain for all these targets, with some caveats[^caveats]. It comes with most of the basic tools that you would need in order to provide the most basic integrations, e.g. LLDB as a debugger, `clangd` as a language server, `clang-tidy` as a linter, memory and address sanitizers, and refactoring tools. For building, different vendors require different specific build steps, but one should be able to glue all of them together in one big, disgusting CMake build[^cmake-ray]. Of course, on proprietary platforms things are generally more challenging, especially when you have to deal with dev kits for consoles, NDAs around documentation and code signing processes. But we can already see that reducing the scope and applying a sharp focus to one use case makes the whole ordeal much more manageable.
 
-As always, the devil is in the details, and I'm probably missing something. But it seems like a worthy thing to attempt. Oftentimes, it is better to think that something is _quite feasible_, even though it might ordinarily be considered impossible[^impossible].
+As always, the devil is in the details, and I'm probably missing something. But it seems like it would be a worthy thing to attempt. Oftentimes, it is better to think that something is _quite feasible_, even though it might ordinarily be considered impossible[^impossible].
 
 [^caveats]: Apple and Sony maintain forks/patches for Clang targeted around their specific hardware, which might lead to incompatibilities with the upstream version, at least when using a newer version of the latter. Microsoft requires the use of `clang-cl` for compatibility with MSVC.
 
@@ -77,14 +77,12 @@ You might ask why I'm even focused on C as a language in the first place. In the
 
 For one, we are in a weird middle phase of a low-level programming language revolution. The paradigm shift hasn't quite taken place yet. Alternative languages are either still too early (e.g. Zig, Jai), or ended up not quite delivering for what we were looking for after all (e.g. Rust[^rust]), or simply didn't get enough traction so far (e.g. Odin). As a result, there are not only lots of existing projects written in C and C++ that have to be maintained, but plenty of new ones that are started from scratch.
 
-C is arguably the mother language of most low-level programming languages in use today. It has the only commonly supported ABI for foreign function interfaces, so if you want to build library code that is supposed to be called by as many languages as possible, C is still your best bet[^library] (unless you're fine with putting your code behind a REST API). Of course, you could still use C++ in that case, and simply use `extern "C"` judiciously, but then you're required to maintain the mismatch between C++ features on the inside and a pure C API on the outside.
+C is arguably the mother language of most low-level programming languages in use today. It has the only commonly supported ABI for foreign function interfaces, so if you want to build library code that is supposed to be called by as many languages as possible, C is still your best bet (unless you're fine with putting your code behind a REST API). Of course, you could still use C++ in that case, and simply use `extern "C"` judiciously, but then you're required to maintain the mismatch between C++ features on the inside and a pure C API on the outside.
 
-I personally just like C more because of its simplicity. So far, I haven't been able to befriend C++ due to the insane complexity the language has accrued over the years. It seems like there are a dozen different ways to do any one thing, and one more option to come around the corner with every new version of the standard. That being said, I'm not oblivious to the fact that C++ is very popular (or should I say, widespread) for cross-platform application development, and that it is the de facto standard in many areas. Yet, I have to keep the scope small at the beginning. So I'm going to focus on C, which I care about the most and use myself. At some point, should it get off the ground, I think it could be useful to extend the IDE to the broader "C family" of languages, i.e. C++, Objective C/C++ and perhaps also OpenCL/CUDA. Incidentally, these languages are all supported by Clang.
+I personally just like C more because of its simplicity. So far, I haven't been able to befriend C++ due to the insane complexity the language has accrued over the years. It seems like there are a dozen different ways to do any one thing, and one more option to come around the corner with every new version of the standard. That being said, I'm not oblivious to the fact that C++ is very popular (or should I say, widespread) for cross-platform application development, and that it is the de facto standard in many areas.
 
 \
 
-In summary, I am aware that this is a large project and that I haven't fully conceptualized either the complexity of it, or the exact expectations and use cases that arise out of it. But I'm motivated to create something that I would enjoy using myself, and that can provide a better alternative for people like me. People who deeply care about the tools they are using and who are becoming increasingly disenchanted with the state of software development environments.
+In summary, I am aware that I haven't fully conceptualized either the complexity of it, or the exact expectations and use cases that arise out of it. But I think there is space for someone to provide a better alternative for people like me. People who deeply care about the tools they are using and who are becoming increasingly disenchanted with the state of software development environments.
 
 [^rust]: This statement was intended to be somewhat provocative, so if you're a Rust enthusiast who feels enraged as a result, then I did everything right! Joking aside, what I want to hint at is that not every project necessarily cares about memory safety, and not every developer appreciates the borrow checker and sophisticated ML-influenced type system for their use case.
-
-[^library]: There is another hidden motivation for choosing to focus on C, which I want to write about in another article. In short, the idea of creating a library that's useable from many different languages is very relevant to me for another project I have planned.

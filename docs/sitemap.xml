@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://srseil.com/projects/</loc></url>
+  <url><loc>https://srseil.com/articles/musings-on-a-better-c-ide/</loc></url>
   <url><loc>https://srseil.com/articles/finishing-software/</loc></url>
   <url><loc>https://srseil.com/articles/transformative-insights/</loc></url>
   <url><loc>https://srseil.com/articles/starting-a-blog/</loc></url>
   <url><loc>https://srseil.com/articles/slow-painful-learning/</loc></url>
   <url><loc>https://srseil.com/articles/sobriety/</loc></url>
   <url><loc>https://srseil.com/articles/</loc></url>
-  <url><loc>https://srseil.com/articles/creating-an-ide-for-the-c-programming-language/</loc></url>
   <url><loc>https://srseil.com/articles/understanding-c-programming-on-windows/</loc></url>
   <url><loc>https://srseil.com/about/</loc></url>
   <url><loc>https://srseil.com/</loc></url>
-  <url><loc>https://srseil.com/cv/</loc></url>
 </urlset>
