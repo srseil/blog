@@ -1,16 +1,20 @@
 :root {
-    --paper: #dcdde1;        /* page background */
+    /* Near-white, carrying the dark theme's hue (272.8°) at ~40% of its chroma
+       so the two themes are recognisably the same family without the light one
+       reading as a blue page. */
+    --paper: #f8f9fd;        /* page background */
     --ink: #373945;          /* text */
-    --accent: #3a7af2;       /* links */
-    --panel: #c0c3cb;        /* code / preformatted background */
-    --quote-bg: #f3f3f3;     /* blockquote background */
+    --accent: #2b68d8;       /* links */
+    --panel: #e9ebf0;        /* code / preformatted background */
+    --quote-bg: #f0f1f6;     /* blockquote background */
     --border: #373945;       /* borders (images, code, tables) */
     --error: #b3261e;        /* failure text and warning boxes */
 }
 
-/* Dark theme — a cool dark slate mirroring the cool-grey light theme.
-   Applied automatically for a dark OS (when no manual choice is stored) and
-   whenever the toggle forces it via data-theme="dark". */
+/* Dark theme — a cool dark slate. The light theme is a neutral near-white, so
+   the two are no longer tinted alike; the slate reads as a deliberate choice
+   rather than an inversion. Applied automatically for a dark OS (when no manual
+   choice is stored) and whenever the toggle forces it via data-theme="dark". */
 :root[data-theme="dark"] {
     --paper: #1e2027;
     --ink: #d5d7de;

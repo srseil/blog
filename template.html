@@ -21,7 +21,7 @@ $endif$
 	<link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png" />
 	<meta name="apple-mobile-web-app-title" content="Stefan Seil" />
 	<link rel="manifest" href="/favicon/site.webmanifest" />
-	<meta name="theme-color" id="theme-color-meta" content="#dcdde1" />
+	<meta name="theme-color" id="theme-color-meta" content="#f8f9fd" />
 	<script>
 		// Three-state theme control: "auto" follows the OS (and keeps following
 		// it live), "light"/"dark" pin a choice. Applied before paint to avoid a
@@ -41,7 +41,7 @@ $endif$
 				root.setAttribute("data-theme-mode", mode);
 				root.classList.add("js");
 				var meta = document.getElementById("theme-color-meta");
-				if (meta) meta.setAttribute("content", theme === "dark" ? "#1e2027" : "#dcdde1");
+				if (meta) meta.setAttribute("content", theme === "dark" ? "#1e2027" : "#f8f9fd");
 				var btn = document.getElementById("theme-toggle");
 				if (btn) btn.title = "Theme: " + mode;
 			}
