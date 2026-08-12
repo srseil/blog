@@ -5,6 +5,7 @@
     --panel: #c0c3cb;        /* code / preformatted background */
     --quote-bg: #f3f3f3;     /* blockquote background */
     --border: #373945;       /* borders (images, code, tables) */
+    --error: #b3261e;        /* failure text and warning boxes */
 }
 
 /* Dark theme — a cool dark slate mirroring the cool-grey light theme.
@@ -17,6 +18,7 @@
     --panel: #2a2d35;
     --quote-bg: #262931;
     --border: #3d4049;
+    --error: #ff7b72;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -27,6 +29,7 @@
         --panel: #2a2d35;
         --quote-bg: #262931;
         --border: #3d4049;
+        --error: #ff7b72;
     }
 }
 
@@ -44,6 +47,14 @@ body {
     font-weight: 400;
     font-size: 18px;
     background: var(--paper);
+}
+
+/* The `hidden` attribute only hides via the UA stylesheet's `[hidden] {
+   display: none }`, and *any* author rule setting `display` beats it — author
+   styles win over UA styles regardless of specificity. Anything given
+   `display: flex` below would otherwise ignore `hidden` entirely. */
+[hidden] {
+    display: none !important;
 }
 
 a:hover {
@@ -152,6 +163,22 @@ h3:hover .anchor,
 
 .anchor:hover {
     text-decoration: underline;
+}
+
+/* Unmissable marker for pages with `draft: true` in their frontmatter. */
+.draft-banner {
+    background: #b3261e;
+    color: #ffffff;
+    font-family: "Raleway", sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: 0.12em;
+    text-align: center;
+    text-transform: uppercase;
+    padding: 0.7em 1em;
+    margin: 0 0 1.5em;
+    border: 2px solid #7f1a15;
+    border-radius: 0.2ch;
 }
 
 p {
@@ -284,6 +311,170 @@ html.js .theme-toggle {
 :root[data-theme-mode="light"] .theme-toggle .icon-light,
 :root[data-theme-mode="dark"] .theme-toggle .icon-dark {
     display: block;
+}
+
+/* Private note editor at /notes/ — see docs/notes/notes.js. Font sizes here
+   stay at 16px even on small screens, because iOS Safari zooms the viewport
+   when a focused input is any smaller. */
+.notes-unlock,
+.notes-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75em;
+}
+
+/* Both states start at the same offset, so unlocking does not shift the page. */
+.notes-unlock,
+.notes-editor {
+    margin-top: 1.5em;
+}
+
+.notes-toolbar {
+    margin-bottom: 0.75em;
+}
+
+.notes-label {
+    font-weight: bold;
+}
+
+.notes-input,
+.notes-button {
+    color: var(--ink);
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 0.2ch;
+    font-size: 16px;
+}
+
+.notes-input {
+    font-family: "Source Code Pro", monospace;
+    padding: 0.5em;
+    flex: 1 1 18em;
+    min-width: 0;
+}
+
+/* The note is two stacked layers: a div that draws the text — and the link
+   highlighting a textarea cannot hold — with the real textarea transparent on
+   top, contributing only its caret and selection. The border and background
+   belong to the wrapper so that neither layer draws a box of its own. */
+.notes-text-wrap {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 0.2ch;
+}
+
+.notes-text-wrap:focus-within {
+    border-color: var(--accent);
+}
+
+/* Every property here moves glyphs around, so the two layers have to agree on
+   all of them or the highlighting drifts out of register with the text. */
+.notes-highlight,
+.notes-text {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0.5em;
+    border: 0;
+    font-family: "Source Code Pro", monospace;
+    font-size: 16px;
+    line-height: 1.5;
+    letter-spacing: normal;
+    tab-size: 4;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: normal;
+    scrollbar-gutter: stable;
+}
+
+.notes-highlight {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    color: var(--ink);
+    pointer-events: none;
+}
+
+.notes-text {
+    position: relative;
+    display: block;
+    width: 100%;
+    min-height: 60vh;
+    background: transparent;
+    color: transparent;
+    caret-color: var(--ink);
+    resize: vertical;
+    overflow: auto;
+}
+
+.notes-text:focus {
+    outline: none;
+}
+
+/* Translucent, so the highlighted text underneath stays readable while it is
+   selected — the textarea's own glyphs are invisible. */
+.notes-text::selection {
+    background: rgba(110, 168, 255, 0.35);
+    background: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.notes-link {
+    color: var(--accent);
+    text-decoration: underline;
+}
+
+/* Set while Cmd/Ctrl is held over a link — see updateLinkCursor() in notes.js. */
+.notes-text.is-link-hover {
+    cursor: pointer;
+}
+
+.notes-button {
+    font-family: "Source Sans 3", sans-serif;
+    font-weight: bold;
+    padding: 0.5em 1.2em;
+    cursor: pointer;
+}
+
+.notes-button:hover:not(:disabled) {
+    border-color: var(--accent);
+}
+
+.notes-button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.notes-status {
+    font-style: italic;
+    opacity: 0.8;
+}
+
+.notes-status[data-kind="error"] {
+    color: var(--error);
+    font-style: normal;
+    font-weight: bold;
+    opacity: 1;
+}
+
+.notes-message {
+    border: 1px solid var(--error);
+    border-radius: 0.2ch;
+    background: var(--quote-bg);
+    padding: 0.8em 1em;
+    margin-top: 1.5em;
+}
+
+.notes-message p {
+    text-align: left;
+    margin: 0;
+}
+
+.notes-message-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75em;
+    margin-top: 0.8em;
 }
 
 @media (max-width: 500px) {

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Notes vault setup</title>
+<style>
+	body { font-family: system-ui, sans-serif; max-width: 820px; margin: 2em auto; padding: 0 1em; line-height: 1.5; }
+	h1 { font-size: 1.4em; }
+	h2 { font-size: 1.1em; margin-top: 2em; }
+	fieldset { border: 1px solid #999; border-radius: 4px; margin: 1.5em 0; padding: 1em 1.2em 1.4em; }
+	legend { font-weight: bold; padding: 0 0.4em; }
+	label { display: block; margin-top: 0.9em; font-weight: bold; }
+	input, textarea { width: 100%; box-sizing: border-box; font-family: ui-monospace, monospace; font-size: 14px; padding: 0.45em; margin-top: 0.25em; }
+	textarea { min-height: 5em; }
+	button { font-size: 15px; font-weight: bold; padding: 0.6em 1.4em; margin-top: 1.2em; cursor: pointer; }
+	pre { background: #f2f2f2; border: 1px solid #ccc; border-radius: 4px; padding: 1em; overflow-x: auto; white-space: pre-wrap; word-break: break-all; }
+	.warn { background: #fff4e5; border: 1px solid #d98324; border-radius: 4px; padding: 0.8em 1em; }
+	.err { color: #b3261e; font-weight: bold; }
+	.hint { font-weight: normal; font-size: 0.9em; opacity: 0.8; }
+	output { display: block; }
+</style>
+</head>
+<body>
+
+<h1>Notes vault setup</h1>
+
+<p class="warn">
+	<strong>This file lives outside <code>docs/</code> and is never published.</strong>
+	It runs entirely in your browser — nothing is sent anywhere. Everything you
+	type here is a secret; close the tab when you are done, and never paste the
+	token or passphrase into the deployed page or into a chat.
+</p>
+
+<p id="insecure" class="err" hidden>
+	<code>crypto.subtle</code> is unavailable — this browser does not treat the
+	page as a secure context. Serve the folder locally instead:
+	<code>python3 -m http.server</code>, then open
+	<code>http://localhost:8000/notes-setup.html</code>.
+</p>
+
+<h2>Order of operations</h2>
+<ol>
+	<li>Create the GitHub token (see the bottom of this page).</li>
+	<li>Create a <strong>secret</strong> gist with one file called <code>notes.json</code> and any placeholder content. Copy its ID out of the URL.</li>
+	<li>Run <em>Create a new vault</em> below.</li>
+	<li>Paste the <code>CONFIG</code> block into <code>docs/notes/notes.js</code>, replacing the empty one.</li>
+	<li>Paste the <em>initial gist content</em> into the gist, replacing the placeholder.</li>
+	<li>Commit and push. Only the ciphertext is committed.</li>
+</ol>
+
+<form id="create-form">
+<fieldset>
+	<legend>Create a new vault</legend>
+
+	<label>GitHub token
+		<span class="hint">Never leaves this page; it is encrypted before it is shown.</span>
+		<input type="password" id="c-token" autocomplete="off" required />
+	</label>
+
+	<label>Gist ID
+		<span class="hint">The hex string at the end of the gist URL.</span>
+		<input type="text" id="c-gist" autocomplete="off" spellcheck="false" required />
+	</label>
+
+	<label>File name in the gist
+		<input type="text" id="c-filename" value="notes.json" autocomplete="off" spellcheck="false" required />
+	</label>
+
+	<label>Passphrase
+		<span class="hint">Either a generated 16+ character password from your password
+			manager, or five diceware words. There is no recovery if you lose it.</span>
+		<input type="password" id="c-pass" autocomplete="new-password" required />
+	</label>
+
+	<label>Passphrase again
+		<input type="password" id="c-pass2" autocomplete="new-password" required />
+	</label>
+
+	<button type="submit">Generate</button>
+	<p class="err" id="c-error" hidden></p>
+</fieldset>
+</form>
+
+<output id="create-output" hidden>
+	<h2>1. Paste into <code>docs/notes/notes.js</code></h2>
+	<pre id="out-config"></pre>
+	<h2>2. Paste as the gist file content</h2>
+	<p>This is an encrypted empty note. It replaces your placeholder text.</p>
+	<pre id="out-gist"></pre>
+</output>
+
+<form id="rotate-form">
+<fieldset>
+	<legend>Change the passphrase, token or gist</legend>
+	<p class="hint" style="font-size: 1em;">
+		Opens the existing vault and re-seals it. The data key inside is always
+		preserved, so your note stays readable and never needs re-encrypting —
+		which is what makes this, and not <em>Create a new vault</em>, the way to
+		replace an expired or revoked token. Only the <code>CONFIG</code> block
+		changes. Leave any field below blank to keep its current value.
+	</p>
+
+	<label>Current <code>salt</code>
+		<input type="text" id="r-salt" autocomplete="off" spellcheck="false" required />
+	</label>
+
+	<label>Current <code>iv</code>
+		<input type="text" id="r-iv" autocomplete="off" spellcheck="false" required />
+	</label>
+
+	<label>Current <code>vault</code>
+		<textarea id="r-vault" autocomplete="off" spellcheck="false" required></textarea>
+	</label>
+
+	<label>Current passphrase
+		<input type="password" id="r-old" autocomplete="off" required />
+	</label>
+
+	<label>New passphrase
+		<span class="hint">Blank keeps the current one. The salt and iv are
+			regenerated either way.</span>
+		<input type="password" id="r-new" autocomplete="new-password" />
+	</label>
+
+	<label>New passphrase again
+		<input type="password" id="r-new2" autocomplete="new-password" />
+	</label>
+
+	<label>New GitHub token
+		<span class="hint">Blank keeps the current one.</span>
+		<input type="password" id="r-token" autocomplete="off" />
+	</label>
+
+	<label>New gist ID
+		<span class="hint">Blank keeps the current one.</span>
+		<input type="text" id="r-gist" autocomplete="off" spellcheck="false" />
+	</label>
+
+	<label>New file name in the gist
+		<span class="hint">Blank keeps the current one.</span>
+		<input type="text" id="r-filename" autocomplete="off" spellcheck="false" />
+	</label>
+
+	<button type="submit">Re-seal</button>
+	<p class="err" id="r-error" hidden></p>
+</fieldset>
+</form>
+
+<output id="rotate-output" hidden>
+	<h2>Replace <code>CONFIG</code> in <code>docs/notes/notes.js</code></h2>
+	<p id="out-rotate-summary"></p>
+	<pre id="out-rotate"></pre>
+	<p>The gist itself needs no change — the data key is the same, so the note
+	decrypts exactly as before.</p>
+</output>
+
+<h2>Creating the GitHub token</h2>
+<p>
+	Try a fine-grained token first: <em>Settings → Developer settings → Personal
+	access tokens → Fine-grained tokens</em>, expiration <em>No expiration</em>,
+	and under <em>Account permissions</em> set <strong>Gists</strong> to
+	<em>Read and write</em>. No repository access is needed.
+</p>
+<p>
+	Then verify it actually works, because fine-grained token support for the
+	gists API has historically been unreliable:
+</p>
+<pre>curl -s -o /dev/null -w '%{http_code}\n' \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Accept: application/vnd.github+json" \
+  https://api.github.com/gists</pre>
+<p>
+	If that is not <code>200</code>, fall back to a <em>classic</em> token with
+	the single <code>gist</code> scope ticked and nothing else, expiration
+	<em>No expiration</em>. That scope grants access to your gists only.
+</p>
+
+<script>
+"use strict";
+
+const KDF_ITERATIONS = 1000000;
+const utf8 = new TextEncoder();
+
+function fromBase64(value) {
+	const binary = atob(value.trim());
+	const bytes = new Uint8Array(binary.length);
+	for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+	return bytes;
+}
+
+function toBase64(buffer) {
+	const bytes = new Uint8Array(buffer);
+	let binary = "";
+	for (let i = 0; i < bytes.length; i += 0x8000) {
+		binary += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+	}
+	return btoa(binary);
+}
+
+function deriveKey(passphrase, salt, usages) {
+	return crypto.subtle.importKey("raw", utf8.encode(passphrase), "PBKDF2", false, ["deriveKey"])
+		.then(base => crypto.subtle.deriveKey(
+			{ name: "PBKDF2", salt, iterations: KDF_ITERATIONS, hash: "SHA-256" },
+			base,
+			{ name: "AES-GCM", length: 256 },
+			false,
+			usages
+		));
+}
+
+// Encrypts the vault object and renders it as the CONFIG literal that
+// docs/notes/notes.js expects, verbatim.
+async function sealVault(vaultObject, passphrase) {
+	const salt = crypto.getRandomValues(new Uint8Array(16));
+	const iv = crypto.getRandomValues(new Uint8Array(12));
+	const key = await deriveKey(passphrase, salt, ["encrypt"]);
+	const ciphertext = await crypto.subtle.encrypt(
+		{ name: "AES-GCM", iv }, key, utf8.encode(JSON.stringify(vaultObject))
+	);
+	return [
+		"\tvar CONFIG = {",
+		"\t\tkdfIterations: " + KDF_ITERATIONS + ",",
+		'\t\tsalt: "' + toBase64(salt) + '",',
+		'\t\tiv: "' + toBase64(iv) + '",',
+		'\t\tvault: "' + toBase64(ciphertext) + '",',
+		"\t};",
+	].join("\n");
+}
+
+function showError(node, message) {
+	node.textContent = message;
+	node.hidden = false;
+}
+
+// The vault ciphertext ends up public in the repo, so the passphrase is the
+// only thing standing behind it and needs real entropy. Two ways to get there:
+// several words (diceware, ~13 bits each), or one long random string from a
+// password manager. Length is only a proxy in the second case — it cannot tell
+// a generated string from a memorable one — but a *generated* 14-character
+// alphanumeric password is ~83 bits, far past five diceware words at ~65.
+function tooWeak(passphrase) {
+	const words = passphrase.split(/\s+/).filter(Boolean).length;
+	if (words >= 4 || passphrase.length >= 14) return null;
+	return "Too weak. Use at least four words, or a generated random string of " +
+		"14+ characters. This ciphertext will be public.";
+}
+
+document.getElementById("create-form").addEventListener("submit", async event => {
+	event.preventDefault();
+	const error = document.getElementById("c-error");
+	error.hidden = true;
+	document.getElementById("create-output").hidden = true;
+
+	const passphrase = document.getElementById("c-pass").value;
+	if (passphrase !== document.getElementById("c-pass2").value) {
+		showError(error, "The two passphrases do not match.");
+		return;
+	}
+	const weak = tooWeak(passphrase);
+	if (weak) {
+		showError(error, weak);
+		return;
+	}
+
+	try {
+		// Random per-note data key, kept inside the vault so that changing the
+		// passphrase never requires re-encrypting the note itself.
+		const dek = crypto.getRandomValues(new Uint8Array(32));
+		const filename = document.getElementById("c-filename").value.trim();
+
+		document.getElementById("out-config").textContent = await sealVault({
+			token: document.getElementById("c-token").value.trim(),
+			gistId: document.getElementById("c-gist").value.trim(),
+			filename,
+			dek: toBase64(dek),
+		}, passphrase);
+
+		// An encrypted empty note, so the gist starts in the format the app reads.
+		const noteKey = await crypto.subtle.importKey("raw", dek, "AES-GCM", false, ["encrypt"]);
+		const noteIv = crypto.getRandomValues(new Uint8Array(12));
+		const noteCt = await crypto.subtle.encrypt({ name: "AES-GCM", iv: noteIv }, noteKey, utf8.encode(""));
+		document.getElementById("out-gist").textContent =
+			JSON.stringify({ v: 1, iv: toBase64(noteIv), ct: toBase64(noteCt) });
+
+		document.getElementById("create-output").hidden = false;
+		event.target.reset();
+	} catch (e) {
+		showError(error, "Failed: " + e.message);
+	}
+});
+
+document.getElementById("rotate-form").addEventListener("submit", async event => {
+	event.preventDefault();
+	const error = document.getElementById("r-error");
+	error.hidden = true;
+	document.getElementById("rotate-output").hidden = true;
+
+	const current = document.getElementById("r-old").value;
+	const next = document.getElementById("r-new").value;
+	const newToken = document.getElementById("r-token").value.trim();
+	const newGist = document.getElementById("r-gist").value.trim();
+	const newFilename = document.getElementById("r-filename").value.trim();
+
+	if (next) {
+		if (next !== document.getElementById("r-new2").value) {
+			showError(error, "The two new passphrases do not match.");
+			return;
+		}
+		const weak = tooWeak(next);
+		if (weak) {
+			showError(error, weak);
+			return;
+		}
+	} else if (document.getElementById("r-new2").value) {
+		showError(error, "The two new passphrases do not match.");
+		return;
+	} else if (!newToken && !newGist && !newFilename) {
+		showError(error, "Nothing to change — fill in a new passphrase, token, gist ID or file name.");
+		return;
+	}
+
+	try {
+		const salt = fromBase64(document.getElementById("r-salt").value);
+		const key = await deriveKey(current, salt, ["decrypt"]);
+		let plaintext;
+		try {
+			plaintext = await crypto.subtle.decrypt(
+				{ name: "AES-GCM", iv: fromBase64(document.getElementById("r-iv").value) },
+				key,
+				fromBase64(document.getElementById("r-vault").value)
+			);
+		} catch (e) {
+			showError(error, "Wrong current passphrase, or the salt/iv/vault values do not match.");
+			return;
+		}
+
+		// Everything not explicitly replaced is carried over verbatim — above all
+		// `dek`, which is what keeps the existing note readable.
+		const vault = JSON.parse(new TextDecoder().decode(plaintext));
+		const changed = [];
+		if (newToken) { vault.token = newToken; changed.push("token"); }
+		if (newGist) { vault.gistId = newGist; changed.push("gist ID"); }
+		if (newFilename) { vault.filename = newFilename; changed.push("file name"); }
+		if (next) changed.push("passphrase");
+
+		document.getElementById("out-rotate-summary").textContent =
+			"Replaced: " + changed.join(", ") + ". The data key is unchanged.";
+		document.getElementById("out-rotate").textContent =
+			await sealVault(vault, next || current);
+		document.getElementById("rotate-output").hidden = false;
+		event.target.reset();
+	} catch (e) {
+		showError(error, "Failed: " + e.message);
+	}
+});
+
+if (!window.crypto || !crypto.subtle) {
+	document.getElementById("insecure").hidden = false;
+}
+</script>
+
+</body>
+</html>
