@@ -317,9 +317,10 @@ html.js .theme-toggle {
     display: block;
 }
 
-/* Private note editor at /notes/ — see docs/notes/notes.js. Font sizes here
-   stay at 16px even on small screens, because iOS Safari zooms the viewport
-   when a focused input is any smaller. */
+/* Controls shared by the interactive pages — the note editor at /notes/
+   (docs/notes/notes.js) and the noise player at /noise/ (docs/noise/noise.js).
+   Font sizes here stay at 16px even on small screens, because iOS Safari zooms
+   the viewport when a focused input is any smaller. */
 .notes-unlock,
 .notes-toolbar {
     display: flex;
@@ -343,7 +344,8 @@ html.js .theme-toggle {
 }
 
 .notes-input,
-.notes-button {
+.notes-button,
+.noise-button {
     color: var(--ink);
     background: var(--panel);
     border: 1px solid var(--border);
@@ -440,11 +442,13 @@ html.js .theme-toggle {
     cursor: pointer;
 }
 
-.notes-button:hover:not(:disabled) {
+.notes-button:hover:not(:disabled),
+.noise-button:hover:not(:disabled) {
     border-color: var(--accent);
 }
 
-.notes-button:disabled {
+.notes-button:disabled,
+.noise-button:disabled {
     opacity: 0.5;
     cursor: default;
 }
@@ -479,6 +483,88 @@ html.js .theme-toggle {
     flex-wrap: wrap;
     gap: 0.75em;
     margin-top: 0.8em;
+}
+
+/* Noise player at /noise/ — see docs/noise/noise.js. The button's surface,
+   hover and disabled states come from the shared control rules above. */
+.noise-player {
+    margin-top: 1.5em;
+}
+
+.noise-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75em;
+}
+
+/* Sized in rem rather than em so the only control on the page stays a 44px
+   touch target even where the small-screen rules drop the body font to 12px. */
+.noise-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    cursor: pointer;
+}
+
+.noise-button svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+/* One icon per state, following the theme toggle's pattern above: hide them
+   all, then let the state class on the button reveal one. */
+.noise-icon-play,
+.noise-icon-pause,
+.noise-icon-busy {
+    display: none;
+}
+
+.noise-button .noise-icon-play,
+.noise-button.is-playing .noise-icon-pause,
+.noise-button.is-busy .noise-icon-busy {
+    display: block;
+}
+
+.noise-button.is-playing .noise-icon-play,
+.noise-button.is-busy .noise-icon-play {
+    display: none;
+}
+
+@keyframes noise-spin {
+    to { transform: rotate(360deg); }
+}
+
+.noise-icon-busy {
+    animation: noise-spin 0.9s linear infinite;
+}
+
+/* Without the spin the broken ring just reads as a glyph, so fall back to the
+   dimmed play icon — the button is disabled while busy either way. */
+@media (prefers-reduced-motion: reduce) {
+    .noise-icon-busy {
+        animation: none;
+    }
+
+    .noise-button.is-busy .noise-icon-busy {
+        display: none;
+    }
+
+    .noise-button.is-busy .noise-icon-play {
+        display: block;
+    }
+}
+
+/* Only ever shown when something failed. Paragraphs are justified site-wide,
+   which looks wrong on a short message that wraps. */
+.noise-error {
+    margin-top: 0.75em;
+    text-align: left;
+    color: var(--error);
+    font-weight: bold;
 }
 
 @media (max-width: 500px) {

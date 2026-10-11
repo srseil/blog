@@ -10,3 +10,5 @@
 *.webp binary
 *.woff binary
 *.woff2 binary
+*.opus binary
+*.m4a binary
