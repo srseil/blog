@@ -608,3 +608,143 @@ html.js .theme-toggle {
         font-size: 12px;
     }
 }
+
+/* Wading stilts band along the bottom of every page (drawn by wading.js).
+   Its colours follow the theme like everything else; the water and the
+   birds' grain are baked into bitmaps, which wading.js redraws when the
+   theme changes. */
+:root {
+    --wading-height: 230px;
+    --water-top: #86a8c4;
+    --water-bottom: #6489aa;
+    --water-mottle: 0.32;
+    --streak: #f3f1ea;
+    --bird-body: #f6f3ec;
+    --bird-ink: #22252b;
+    --bird-leg: #3b3034;
+    --bird-ink-2: #474a52;
+    --bird-leg-core: #6e4843;
+    --bird-mark: #8e887e;
+    --reflection-opacity: 0.2;
+}
+
+:root[data-theme="dark"] {
+    --water-top: #35506a;
+    --water-bottom: #283f56;
+    --water-mottle: 0.16;
+    --streak: #c9d4df;
+    --bird-body: #e4e2dc;
+    --bird-ink: #101216;
+    --bird-leg: #15161a;
+    --bird-ink-2: #2e3137;
+    --bird-leg-core: #5b3c38;
+    --bird-mark: #8f8b84;
+    --reflection-opacity: 0.16;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        --water-top: #35506a;
+        --water-bottom: #283f56;
+        --water-mottle: 0.16;
+        --streak: #c9d4df;
+        --bird-body: #e4e2dc;
+        --bird-ink: #101216;
+        --bird-leg: #15161a;
+        --bird-ink-2: #2e3137;
+        --bird-leg-core: #5b3c38;
+        --bird-mark: #8f8b84;
+        --reflection-opacity: 0.16;
+    }
+}
+
+/* Pin the band to the bottom of the window on short pages: the body is at
+   least a window tall and leaves room at the bottom for the absolutely
+   positioned band. `flow-root` keeps the header's top margin inside the body
+   (it used to collapse through it, replacing the default 8px margin), so the
+   page starts at the same height as before and the body can span exactly
+   one window. */
+body {
+    position: relative;
+    display: flow-root;
+    box-sizing: border-box;
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-bottom: var(--wading-height);
+}
+
+.wading {
+    /* Spans the content column, like everything else on the page, and fades
+       out towards the left and right (the top fade is baked into the water). */
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--wading-height);
+    /* Eased (smootherstep) rather than linear, so the fade has no visible
+       start or end. */
+    --wading-side-fade: linear-gradient(to right, transparent, rgba(0,0,0,0.016) 3.5%, rgba(0,0,0,0.104) 7%, rgba(0,0,0,0.275) 10.5%, rgba(0,0,0,0.5) 14%, rgba(0,0,0,0.725) 17.5%, rgba(0,0,0,0.896) 21%, rgba(0,0,0,0.984) 24.5%, #000 28%, #000 72%, rgba(0,0,0,0.984) 75.5%, rgba(0,0,0,0.896) 79%, rgba(0,0,0,0.725) 82.5%, rgba(0,0,0,0.5) 86%, rgba(0,0,0,0.275) 89.5%, rgba(0,0,0,0.104) 93%, rgba(0,0,0,0.016) 96.5%, transparent);
+    -webkit-mask-image: var(--wading-side-fade);
+    mask-image: var(--wading-side-fade);
+    /* Plain stand-in until wading.js has rendered the textured water. */
+    background-image: linear-gradient(to bottom, transparent, var(--water-top) 48%, var(--water-bottom));
+    background-size: 100% 100%;
+    pointer-events: none;
+}
+
+.wading svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.wading .streak { fill: var(--streak); }
+.wading .ripple { fill: none; stroke: var(--streak); stroke-width: 0.9; }
+.wading .reflections { opacity: var(--reflection-opacity); }
+.wading .wading-fill-body { fill: var(--bird-body); }
+.wading .wading-fill-ink { fill: var(--bird-ink); }
+.wading .b-ink { fill: var(--bird-ink); }
+.wading .b-ink2 { fill: var(--bird-ink-2); }
+.wading .b-soft { opacity: 0.85; }
+.wading .b-mark { fill: var(--bird-mark); }
+.wading .b-glint { fill: var(--bird-body); opacity: 0.8; }
+.wading .b-leg { fill: var(--bird-leg); }
+.wading .b-legcore { fill: var(--bird-leg-core); }
+.wading .leg-stop { stop-color: var(--bird-leg); }
+
+@keyframes wading-drift {
+    from { transform: translateX(var(--d0)); }
+    to   { transform: translateX(var(--d1)); }
+}
+
+.wading .streaks g {
+    animation: wading-drift var(--dur) ease-in-out var(--delay) infinite alternate;
+}
+
+.wading.wading-paused .streaks g {
+    animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wading .streaks g {
+        animation: none;
+    }
+}
+
+@media (max-width: 500px) {
+    :root {
+        --wading-height: 180px;
+    }
+}
+
+@media print {
+    body {
+        padding-bottom: 0;
+    }
+
+    .wading {
+        display: none;
+    }
+}
