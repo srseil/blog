@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=12.0, minimum-scale=1.0, user-scalable=yes">
-	<title>Page not found — Stefan Seil</title>
+	<title>Page Not Found — Stefan Seil</title>
 	<meta name="description" content="The page you were looking for does not exist." />
 	<meta name="robots" content="noindex" />
 
@@ -58,7 +58,7 @@
 
 	<meta property="og:type" content="website" />
 	<meta property="og:site_name" content="Stefan Seil's Blog" />
-	<meta property="og:title" content="Page not found" />
+	<meta property="og:title" content="Page Not Found" />
 	<meta property="og:description" content="The page you were looking for does not exist." />
 	<meta property="og:url" content="https://srseil.com/" />
 	<meta property="og:image" content="https://srseil.com/everything-will-be-ok.jpg" />
@@ -78,7 +78,7 @@
 <header>
 	<div class="header-container">
 		<a class="header-nav" href="/">Stefan Seil's Blog</a>
-		<hr />
+		<div class="leafy" aria-hidden="true"></div>
 		<div class="header-nav-row">
 			<a class="header-nav" href="/about/">About</a>
 			<a class="header-nav" href="/projects/">Projects</a>
@@ -89,15 +89,19 @@
 	</div>
 </header>
 <main>
-<p class="title-name">Page not found</p>
+<p class="title-name">Page Not Found</p>
 <hr/>
-<p>The page you are looking for does not exist or may have been moved.</p>
+<figure>
+<img src="/404.jpg" alt="" width="4123" height="2738" />
+<figcaption>The page you are looking for is the friends you made along the way (Ostseebad Baabe, Germany, 2026)</figcaption>
+</figure>
 </main>
 <footer>
 © <span id="footer-year">YEAR</span> — Stefan Seil
 </footer>
 <div class="wading" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg"></svg></div>
 <script src="/wading.js" defer></script>
+<script src="/leaves.js" defer></script>
 <script>
 	document.getElementById("footer-year").textContent = new Date().getFullYear();
 	var themeToggle = document.getElementById("theme-toggle");
