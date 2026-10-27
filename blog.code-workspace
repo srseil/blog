@@ -7,5 +7,20 @@
 	"settings": {
 		"livePreview.serverRoot": "docs/",
 		"terminal.integrated.defaultProfile.windows": "Ubuntu (WSL)"
+	},
+	"tasks": {
+		"version": "2.0.0",
+		"tasks": [
+			{
+				"label": "Serve docs",
+				"detail": "Static server for docs/ at http://localhost:8787",
+				"type": "shell",
+				"command": "python3 -m http.server 8787 --directory docs",
+				"options": { "cwd": "${workspaceFolder}" },
+				"isBackground": true,
+				"problemMatcher": [],
+				"presentation": { "reveal": "always", "panel": "dedicated" }
+			}
+		]
 	}
 }
