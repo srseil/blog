@@ -15,6 +15,7 @@ total=$(find docs -name '*.md' | wc -l | tr -d ' ')
 count=0
 failures=0
 sitemap_urls=()
+drafts=()
 
 echo "Building $total page(s)..."
 
@@ -47,8 +48,12 @@ while IFS= read -r -d '' file; do
         -o "${base%.md}.html"
     ); then
       # Add to the sitemap unless the page opted out with `noindex`.
+      # Drafts set `draft: true`, which implies noindex, so they never appear.
       if ! grep -q 'name="robots" content="noindex"' "$out"; then
         sitemap_urls+=("$canonical")
+      fi
+      if grep -q 'class="draft-banner"' "$out"; then
+        drafts+=("$file")
       fi
     else
       echo "  ✗ failed to build $file" >&2
@@ -66,6 +71,16 @@ done < <(find docs -name '*.md' -print0)
     echo '</urlset>'
 } > docs/sitemap.xml
 echo "Wrote docs/sitemap.xml (${#sitemap_urls[@]} URLs)."
+
+# Remind about unpublished drafts so they are not forgotten.
+if [ "${#drafts[@]}" -gt 0 ]; then
+    echo
+    echo "⚠ ${#drafts[@]} draft(s) — excluded from the sitemap and marked noindex:"
+    for draft in "${drafts[@]}"; do
+        echo "    $draft"
+    done
+    echo
+fi
 
 if [ "$failures" -gt 0 ]; then
     echo "Done with $failures error(s)." >&2

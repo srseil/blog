@@ -3,13 +3,15 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=12.0, minimum-scale=1.0, user-scalable=yes">
-	<title>$title$ — Stefan Seil</title>
+	<title>$if(draft)$[DRAFT] $endif$$title$ — Stefan Seil</title>
 $if(description)$
 	<meta name="description" content="$description$" />
 $else$
 	<meta name="description" content="The personal blog of Stefan Seil — software development tools, game programming, desktop applications and philosophy." />
 $endif$
-$if(noindex)$
+$if(draft)$
+	<meta name="robots" content="noindex" />
+$elseif(noindex)$
 	<meta name="robots" content="noindex" />
 $else$
 	<link rel="canonical" href="$canonical$" />
@@ -101,6 +103,9 @@ $endif$
 	</div>
 </header>
 <main>
+$if(draft)$
+<p class="draft-banner">Draft — not published</p>
+$endif$
 $if(date)$
 <p class="title-date">$date$</p>
 $endif$
