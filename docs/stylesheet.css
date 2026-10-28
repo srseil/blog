@@ -625,6 +625,7 @@ html.js .theme-toggle {
     --bird-ink-2: #474a52;
     --bird-leg-core: #6e4843;
     --bird-mark: #8e887e;
+    --wading-edge: #22252b;
     --reflection-opacity: 0.2;
 }
 
@@ -640,6 +641,7 @@ html.js .theme-toggle {
     --bird-leg-core: #5b3c38;
     --bird-mark: #8f8b84;
     --reflection-opacity: 0.16;
+    --wading-edge: #c9d4df;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -655,6 +657,7 @@ html.js .theme-toggle {
         --bird-leg-core: #5b3c38;
         --bird-mark: #8f8b84;
         --reflection-opacity: 0.16;
+        --wading-edge: #c9d4df;
     }
 }
 
@@ -740,6 +743,22 @@ body {
 @media (max-width: 500px) {
     :root {
         --wading-height: 180px;
+    }
+}
+
+/* On phones the pond is cut off by the screen's bottom edge, where mobile
+   Safari's toolbar meets it in the page colour. A crisp line finishes the
+   pond off there, like the edge of a cloth: dark on the light page, light on
+   the dark one. It fades with the band's sides. */
+@media (max-width: 600px) {
+    .wading::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 2px;
+        background: var(--wading-edge);
     }
 }
 
