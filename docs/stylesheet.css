@@ -694,8 +694,10 @@ body {
     pointer-events: none;
 }
 
-.wading svg {
-    display: block;
+.wading > svg {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
 }
@@ -719,16 +721,18 @@ body {
     to   { transform: translateX(var(--d1)); }
 }
 
-.wading .streaks g {
+/* The water marks drift in whole layers, moved on the GPU (see wading.js). */
+.wading .wading-streaks {
+    will-change: transform;
     animation: wading-drift var(--dur) ease-in-out var(--delay) infinite alternate;
 }
 
-.wading.wading-paused .streaks g {
+.wading.wading-paused .wading-streaks {
     animation-play-state: paused;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .wading .streaks g {
+    .wading .wading-streaks {
         animation: none;
     }
 }

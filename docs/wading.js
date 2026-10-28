@@ -622,31 +622,46 @@
 	// A damped spring: k is the stiffness, z the damping ratio (a little
 	// below 1 overshoots slightly, which reads as alive rather than tweened).
 	function spring(x, k, z) { return { x: x, v: 0, target: x, k: k, z: z }; }
+	// Stepped in small fixed sub-steps: one big step per frame makes a stiff
+	// spring (the peck) overshoot back and forth, i.e. jitter, whenever frames
+	// come slowly or unevenly (e.g. Safari at 30 fps in Low Power Mode). Once
+	// settled it snaps to rest, so a still bird stops changing entirely.
 	function stepSpring(sp, dt) {
-		sp.v += (sp.k * (sp.target - sp.x) - 2 * sp.z * Math.sqrt(sp.k) * sp.v) * dt;
-		sp.x += sp.v * dt;
+		var n = Math.ceil(dt / 0.004), h = dt / n, c = 2 * sp.z * Math.sqrt(sp.k);
+		for (var i = 0; i < n; i++) {
+			sp.v += (sp.k * (sp.target - sp.x) - c * sp.v) * h;
+			sp.x += sp.v * h;
+		}
+		if (Math.abs(sp.target - sp.x) < 0.002 && Math.abs(sp.v) < 0.002) { sp.x = sp.target; sp.v = 0; }
+	}
+
+	// Only touch the DOM when a value actually changes: any change inside the
+	// SVG makes the browser repaint it, so birds standing still should cost
+	// nothing at all.
+	function setAttr(node, name, value) {
+		var key = "_" + name;
+		if (node[key] !== value) { node[key] = value; node.setAttribute(name, value); }
 	}
 
 	function f2(n) { return n.toFixed(2); }
 
 	// Write a bird's current state into its SVG transforms.
 	function render(b) {
-		var breathe = motion ? 0.3 * Math.sin(clock * 1.8 + b.phase) : 0, drop = b.drop.x + breathe;
-		var facing = b.flip.x >= 0 ? 1 : -1, deg = Math.PI / 180;
-		b.el.setAttribute("transform", "translate(" + f2(b.x) + "," + f2(b.y) + ") scale(" + f2(b.s * b.flip.x) + "," + f2(b.s) + ")");
-		b.crouch.setAttribute("transform", "translate(0," + f2(drop) + ")");
-		b.upper.setAttribute("transform", "rotate(" + f2(b.tilt.x) + ")");
-		b.head.setAttribute("transform", "rotate(" + f2(b.headRot.x) + ")");
+		var drop = b.drop.x, facing = b.flip.x >= 0 ? 1 : -1, deg = Math.PI / 180;
+		setAttr(b.el, "transform", "translate(" + f2(b.x) + "," + f2(b.y) + ") scale(" + f2(b.s * b.flip.x) + "," + f2(b.s) + ")");
+		setAttr(b.crouch, "transform", "translate(0," + f2(drop) + ")");
+		setAttr(b.upper, "transform", "rotate(" + f2(b.tilt.x) + ")");
+		setAttr(b.head, "transform", "rotate(" + f2(b.headRot.x) + ")");
 		["front", "back"].forEach(function (w) {
 			var foot = b.feet[w], leg = b.legs[w];
 			var a = solveLeg((foot.x - b.x) / (b.s * facing) - HIPS[w], HIP + DEPTH - drop - foot.lift);
-			leg.thigh.setAttribute("transform", "rotate(" + f2(a.thigh) + ")");
-			leg.shin.setAttribute("transform", "rotate(" + f2(a.shin) + ")");
+			setAttr(leg.thigh, "transform", "rotate(" + f2(a.thigh) + ")");
+			setAttr(leg.shin, "transform", "rotate(" + f2(a.shin) + ")");
 			// Where along the shin is the waterline (y = 0)?
 			var kneeY = -HIP + drop + THIGH * Math.cos(a.thigh * deg), c = Math.cos((a.thigh + a.shin) * deg);
 			var u = c > 0.05 ? -kneeY / c : kneeY < 0 ? 1e3 : -1e3;
-			leg.fade.setAttribute("y1", f2(u - 3));
-			leg.fade.setAttribute("y2", f2(u + DEPTH));
+			setAttr(leg.fade, "y1", f2(u - 3));
+			setAttr(leg.fade, "y2", f2(u + DEPTH));
 		});
 	}
 
@@ -689,18 +704,18 @@
 		// Don't walk into the faded edges.
 		if (b.vx.target && (b.x > W * (1 - EDGE) && b.vx.target > 0 || b.x < W * EDGE && b.vx.target < 0)) b.vx.target = 0;
 		stepSpring(b.vx, dt);
-		b.x += b.vx.x * dt;
+		if (b.vx.x) b.x += b.vx.x * dt;
 		gait(b);
 		// Small, quick head adjustments now and then, like real birds.
-		if (b.glances && clock > b.nextGlance) {
+		if (b.glances && focused && clock > b.nextGlance) {
 			b.glance = Math.random() < 0.3 ? 0 : rand(-8, 8);
-			b.nextGlance = clock + rand(1.2, 4);
+			b.nextGlance = clock + rand(2.5, 7);
 		}
 		b.headRot.target = b.headBase + (b.glances ? b.glance : 0) - 6 * b.bob;
 		b.tilt.target = b.tiltBase + 1.5 * b.bob;
 		b.drop.target = b.dropBase;
 		stepSpring(b.tilt, dt); stepSpring(b.headRot, dt); stepSpring(b.drop, dt); stepSpring(b.flip, dt);
-		if (!b.acting && clock > b.nextAct) act(b);
+		if (!b.acting && focused && clock > b.nextAct) act(b);
 		render(b);
 	}
 
@@ -730,17 +745,27 @@
 		}
 	}
 
-	function buildStreaks(parent) {
-		var g = el("g", { class: "streaks" }, parent);
+	// The marks drift in a few separate layers behind the birds, each moved as
+	// a whole by a CSS transform. Browsers do that on the GPU without
+	// repainting anything, unlike transforms on elements inside the SVG.
+	var STREAK_LAYERS = 4;
+	function buildStreaks() {
+		wrap.querySelectorAll(".wading-streaks").forEach(function (l) { l.remove(); });
+		var layers = [];
+		for (var k = 0; k < STREAK_LAYERS; k++) {
+			var layer = el("svg", { class: "wading-streaks", viewBox: "0 0 " + W + " " + H, preserveAspectRatio: "none" });
+			var d = rand(4, 10) * (k % 2 ? -1 : 1);
+			layer.style.setProperty("--d0", (-d / 2) + "px");
+			layer.style.setProperty("--d1", (d / 2) + "px");
+			layer.style.setProperty("--dur", rand(5, 11).toFixed(1) + "s");
+			layer.style.setProperty("--delay", (-rand(0, 10)).toFixed(1) + "s");
+			wrap.insertBefore(layer, svg);
+			layers.push(layer);
+		}
 		var count = Math.round(W / 55);
 		for (var i = 0; i < count; i++) {
 			var cx = rand(-20, W), cy = rand(H * 0.25, H * 0.98);
-			var c = el("g", {}, g);
-			var d = rand(4, 12) * (Math.random() < 0.5 ? -1 : 1);
-			c.style.setProperty("--d0", (-d / 2) + "px");
-			c.style.setProperty("--d1", (d / 2) + "px");
-			c.style.setProperty("--dur", rand(5, 11).toFixed(1) + "s");
-			c.style.setProperty("--delay", (-rand(0, 10)).toFixed(1) + "s");
+			var c = el("g", {}, layers[i % STREAK_LAYERS]);
 			var lines = 1 + Math.floor(Math.random() * 3), depth = cy / H; // nearer = slightly bigger
 			for (var j = 0; j < lines; j++) {
 				brushStroke(c, cx + rand(-14, 14), cy + j * rand(3.5, 5.5), rand(22, 60) * (0.6 + depth * 0.6), rand(1.6, 2.8));
@@ -785,7 +810,7 @@
 		at(b, delay, function () {
 			b.acting = false;
 			b.glances = true;
-			b.nextAct = clock + rand(1.5, 7);
+			b.nextAct = clock + rand(3, 12);
 		});
 	}
 
@@ -876,18 +901,27 @@
 	}
 
 	// The loop runs only while the band is on screen and motion is allowed.
-	var clock = 0, rafId = 0, lastT = 0;
+	// While the window isn't focused (the page left open in the background),
+	// the birds finish what they're doing and then stand still, and once
+	// everything has settled the loop stops: no work at all until it's back.
+	// Starts out assuming focus: some browsers (phones especially) report no
+	// focus until the first interaction, which would freeze the birds.
+	var clock = 0, rafId = 0, lastT = 0, focused = true;
+	function settled(b) {
+		return !b.queue.length && !b.feet.front.swing && !b.feet.back.swing &&
+			[b.vx, b.tilt, b.headRot, b.drop, b.flip].every(function (sp) { return sp.x === sp.target && !sp.v; });
+	}
 	function frame(now) {
 		rafId = 0;
 		var dt = Math.min(0.05, Math.max(0, (now - lastT) / 1000));
 		lastT = now;
 		clock += dt;
 		birds.forEach(function (b) { update(b, dt); });
-		if (motion && visible) rafId = requestAnimationFrame(frame);
+		if (motion && visible && (focused || !birds.every(settled))) rafId = requestAnimationFrame(frame);
 	}
 
 	function setRunning(on) {
-		wrap.classList.toggle("wading-paused", !on);
+		wrap.classList.toggle("wading-paused", !(on && focused));
 		if (on && motion && birds.length && !rafId) {
 			lastT = performance.now();
 			rafId = requestAnimationFrame(frame);
@@ -896,6 +930,8 @@
 			rafId = 0;
 		}
 	}
+	window.addEventListener("focus", function () { focused = true; setRunning(visible); });
+	window.addEventListener("blur", function () { focused = false; setRunning(visible); });
 
 	// ------------------------------------------------------------- Build
 	// Birds stay out of the faded edges (see the mask in stylesheet.css).
@@ -917,7 +953,7 @@
 		buildPatterns(defs);
 		paintTextures();
 
-		buildStreaks(el("g", {}, svg));
+		buildStreaks();
 		layers.reflections = el("g", { class: "reflections" }, svg);
 		layers.ripples = el("g", {}, svg);
 		layers.birds = el("g", {}, svg);
@@ -949,7 +985,7 @@
 				vx: spring(0, 8, 1), flip: spring(dir, 90, 1),
 				tilt: spring(pose.tilt, 60, 0.9), headRot: spring(pose.head, 110, 0.75), drop: spring(0, 50, 1),
 				tiltBase: pose.tilt, headBase: pose.head, dropBase: 0,
-				glances: true, glance: 0, nextGlance: rand(0, 3), bob: 0, phase: rand(0, 6.28),
+				glances: true, glance: 0, nextGlance: rand(0, 3), bob: 0,
 				queue: [], acting: false, nextAct: clock + rand(0.3, 6), goal: null, tucked: false
 			};
 			birds.push(b);
