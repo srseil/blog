@@ -33,7 +33,7 @@
 	var CONFLICT_STATUS = "Conflict — not saving";
 
 	var el = {};
-	var session = null;   // { token, gistId, filename, dek, updatedAt }
+	var session = null;   // { token, gistId, filename, dek, lastSeen }
 	var dirty = false;
 	var saving = false;
 	var conflicted = false;
@@ -110,7 +110,7 @@
 					gistId: vault.gistId,
 					filename: vault.filename || "notes.json",
 					dek: dek,
-					updatedAt: null,
+					lastSeen: null,   // exact gist file content last read or written
 				};
 			});
 		});
@@ -488,8 +488,8 @@
 	function loadNote() {
 		setStatus("Loading…");
 		return fetchGist().then(function (gist) {
-			session.updatedAt = gist.updated_at;
 			var file = readGistFile(gist);
+			session.lastSeen = file ? file.content : null;
 			if (!file) {
 				// Empty gist — start blank and let the first save create the file.
 				el.text.value = "";
@@ -525,12 +525,20 @@
 		saving = true;
 		var text = el.text.value;
 		var stored = false;
+		var sent = null;
 		setStatus("Saving…");
 
 		// Re-read before writing: this is edited from more than one device, and
 		// a blind PATCH is last-write-wins.
+		//
+		// The comparison is against the stored ciphertext, not `updated_at`.
+		// That timestamp is GitHub's metadata about the gist, and the value in a
+		// PATCH response is not reliably the one the next read returns — when it
+		// drifts, a second save from this very device looks exactly like somebody
+		// else editing. The content cannot lie in that way.
 		pendingSave = fetchGist().then(function (gist) {
-			if (!force && session.updatedAt && gist.updated_at !== session.updatedAt) {
+			var current = readGistFile(gist);
+			if (!force && (current ? current.content : null) !== session.lastSeen) {
 				conflicted = true;
 				setStatus(CONFLICT_STATUS, "error");
 				showMessage(
@@ -544,6 +552,7 @@
 			return encryptNote(text);
 		}).then(function (payload) {
 			if (payload === null) return null;
+			sent = payload;
 			var files = {};
 			files[session.filename] = { content: payload };
 			return api(session.token, "/gists/" + encodeURIComponent(session.gistId), {
@@ -552,12 +561,20 @@
 			});
 		}).then(function (updated) {
 			if (updated === null) return;
-			session.updatedAt = updated.updated_at;
+			// Prefer what GitHub says it stored over what was sent, so that any
+			// normalising on their side does not read as a conflict next time.
+			var written = updated.files && updated.files[session.filename];
+			session.lastSeen = written && typeof written.content === "string"
+				? written.content
+				: sent;
 			conflicted = false;
 			clearMessage();
-			// Anything typed while the request was in flight stays unsaved.
+			// Anything typed while the request was in flight stays unsaved, and
+			// would otherwise sit here until the next keystroke — the autosave
+			// that would have covered it was consumed by this save.
 			dirty = el.text.value !== text;
 			setStatus(dirty ? "Unsaved changes" : "Saved");
+			if (dirty) scheduleAutosave();
 			stored = true;
 		}).catch(function (error) {
 			setStatus("Could not save", "error");
