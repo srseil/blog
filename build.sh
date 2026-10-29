@@ -49,7 +49,9 @@ while IFS= read -r -d '' file; do
     ); then
       # Add to the sitemap unless the page opted out with `noindex`.
       # Drafts set `draft: true`, which implies noindex, so they never appear.
-      if ! grep -q 'name="robots" content="noindex"' "$out"; then
+      # Pages not tracked in git are not deployed, so they are left out too.
+      if ! grep -q 'name="robots" content="noindex"' "$out" \
+        && git ls-files --error-unmatch "$file" >/dev/null 2>&1; then
         sitemap_urls+=("$canonical")
       fi
       if grep -q 'class="draft-banner"' "$out"; then
